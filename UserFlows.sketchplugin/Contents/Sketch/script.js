@@ -2,6 +2,7 @@ var sketch = require('sketch/dom');
 
 var kPluginDomain = "com.abynim.sketchplugins.userflows";
 var kKeepOrganizedKey = "com.abynim.userflows.keepOrganized";
+var kEnableAutoNumbering = "com.abynim.userflows.enableAutoNumbering";
 var kIncludePrototypingKey = "com.abynim.userflows.includePrototypingInExport";
 var kExportScaleKey = "com.abynim.userflows.exportScale";
 var kExportFormatKey = "com.abynim.userflows.exportFormat";
@@ -898,6 +899,14 @@ var generateFlow = function(context) {
 	keepOrganizedCheckbox.setState(keepOrganized);
 	settingsWindow.addAccessoryView(keepOrganizedCheckbox);
 
+	// add a checkbox to enable/disable auto numbering
+	var enableAutoNumbering = NSUserDefaults.standardUserDefaults().objectForKey(kEnableAutoNumbering) || 1;
+	var enableAutoNumberingCheckbox = NSButton.alloc().initWithFrame(NSMakeRect(0,0,300,22));
+	enableAutoNumberingCheckbox.setButtonType(NSSwitchButton);
+	enableAutoNumberingCheckbox.setBezelStyle(0);
+	enableAutoNumberingCheckbox.setTitle(strings["generateFlow-enableAutoNumbering"]);
+	enableAutoNumberingCheckbox.setState(enableAutoNumbering);
+	settingsWindow.addAccessoryView(enableAutoNumberingCheckbox);
 
 	var separator = NSBox.alloc().initWithFrame(NSMakeRect(0,0,300,10));
 	separator.setBoxType(2);
@@ -922,6 +931,7 @@ var generateFlow = function(context) {
 			flowName : nameField.stringValue(),
 			flowDescription : descriptionField.stringValue(),
 			shouldOrganizeFlowPage : keepOrganizedCheckbox.state(),
+			shouldEnableAutoNumbering : enableAutoNumberingCheckbox.state(),
 			flowPageName : pagesDropdown.titleOfSelectedItem(),
 			includePrototypingConnections : includePrototypingCheckbox.state(),
 			newPageItemTitle : newPageItemTitle
@@ -1049,7 +1059,12 @@ var generateFlowWithSettings = function(context, settings, initialArtboard, sour
 			artboardNameLabel.absoluteRect().setY(artboard.absoluteRect().y());
 			artboardNameLabel.frame().setWidth(artboard.frame().width());
 			artboardNameLabel.setTextBehaviour(0);
-			artboardNameLabel.setStringValue(screenNumber + ": " + artboard.name());
+			// if auto numbering is enabled, prefix the label name with a unique index
+			if (settings.shouldEnableAutoNumbering) {
+				artboardNameLabel.setStringValue(screenNumber + ": " + artboard.name());
+			} else {
+				artboardNameLabel.setStringValue(artboard.name());
+			}
 			artboardNameLabel.addAttribute_value(NSFontAttributeName, NSFont.fontWithName_size("HelveticaNeue", 12*exportScale));
 			artboardNameLabel.setTextColor(primaryTextColor);
 			artboardNameLabel.adjustFrameToFit();

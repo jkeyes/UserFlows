@@ -102,6 +102,8 @@
 	<string>New Page</string>
 	<key>generateFlow-keepOrganized</key>
 	<string>Keep _Flows Page Organized</string>
+	<key>generateFlow-enableAutoNumbering</key>
+	<string>Auto number each Artboard</string>
 	<key>generateFlow-includePrototypingConnections</key>
 	<string>Include Prototyping Connections</string>
 	<key>generateFlow-flowGroupName</key>
